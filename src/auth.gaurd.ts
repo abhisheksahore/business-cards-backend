@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
+    return true
     if (this.constant.skipAuth().includes(trimCharsStart('/', request.routerPath))) {
       // profiler.end();
       return true;

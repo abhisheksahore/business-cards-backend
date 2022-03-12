@@ -1,15 +1,27 @@
-import { Body, Controller, Get, Headers, Post, Res, UseGuards } from '@nestjs/common';
-import { File } from './file.decorator';
+import { Body, Controller, Get, Headers, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiConsumes } from '@nestjs/swagger';
+import { Files } from './file.decorator';
 import { UploadGuard } from './fileupload.gaurd';
+import { FastifyReply } from 'fastify';
+import { FileUploadService } from './fileupload.service';
 @Controller()
-export class AppController {
-  constructor() { }
+export class FileUploadController {
+    constructor(
+        private readonly fileUploadService:FileUploadService
+    ) { }
 
-  @Post("upload")
+    @Post()
+    @ApiConsumes('multipart/form-data')
     @UseGuards(UploadGuard)
-    uploadFile(@File() file) {
-    console.log(file); // logs MultipartFile from "fastify-multipart"
-    return "File uploaded"
-}
+    async uploadFile(@Files() files, @Res() res: FastifyReply) {
+
+        let response = await this.fileUploadService.uploadFiles(files);
+       
+        if (response['status'] == 'success') {
+            return res.status(200).send(response);
+        } else {
+            return res.status(400).send(response);
+        }
+    }
 
 }

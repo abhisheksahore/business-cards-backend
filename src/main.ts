@@ -10,7 +10,7 @@ import {
 import { ValidationPipe } from '@nestjs/common';
 import { ServiceAccount } from 'firebase-admin';
 import * as admin from 'firebase-admin';
-import multipart from "fastify-multipart";
+import fileUpload from 'fastify-file-upload'
 
 async function bootstrap() {
 
@@ -49,7 +49,7 @@ async function bootstrap() {
   
   const port = Number(process.env.PORT) || 3000;
 
-  app.register(multipart);
+  app.register(fileUpload)
 
   await app.listen(port, '0.0.0.0');
   const url = await app.getUrl();
