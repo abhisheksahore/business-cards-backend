@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin'
 import { validEmail } from 'src/common/common.service';
 import { DBHelper } from 'src/common/helpers/db.helpers';
+import { getAuth } from 'firebase-admin/auth'
 @Injectable()
 export class AuthService {
 
@@ -42,6 +43,8 @@ export class AuthService {
             await db.collection("users").doc(userDetail.uid).set({
                 usedData: 0,
                 totalCards: 0,
+                email: data.email,
+                displayName: data.name,
             })
             return{
                 status:'success',
@@ -55,5 +58,37 @@ export class AuthService {
             }
         }
        
+    }
+
+    async signInUsingToken(accessToken) {
+
+        let tokenRes = await this.verifyGoogleToken(accessToken);
+        if (tokenRes['status'] === 'error') {
+            return tokenRes;
+        }
+        else {
+
+            let auth = admin.auth();
+
+            // auth.getUser();
+            
+          
+        }
+    }
+
+    async verifyGoogleToken(token: string) {
+        try {
+            let x = await getAuth()
+                .verifyIdToken(token);
+            console.log(x.uid);
+            return x;
+
+        }
+        catch (error) {
+            return{
+                status:'error',
+                message:error.message
+            }
+        }
     }
 }
