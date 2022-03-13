@@ -45,10 +45,11 @@ export class AuthService {
                 totalCards: 0,
                 email: data.email,
                 displayName: data.name,
+                cards:[],
             })
             return{
                 status:'success',
-                message:'user added successfully'
+                message:'user added successfully',
             }
         }
         catch(err){
@@ -68,11 +69,26 @@ export class AuthService {
         }
         else {
 
-            let auth = admin.auth();
-
-            // auth.getUser();
-            
-          
+            let db = admin.firestore();
+            let user = (await db.collection('users').doc(tokenRes['uid']).get()).data();
+            if(!user){
+                await db.collection("users").doc(tokenRes['uid']).set({
+                    usedData: 0,
+                    totalCards: 0,
+                    email: tokenRes['email'],
+                    displayName: tokenRes['name'],
+                    cards:[]
+                })
+                return{
+                    status:'success',
+                    message:'user added successfully',
+                }
+            }
+            console.log(user)
+            return{
+                status:'success',
+                message:'user already exist',
+            }
         }
     }
 
@@ -80,7 +96,7 @@ export class AuthService {
         try {
             let x = await getAuth()
                 .verifyIdToken(token);
-            console.log(x.uid);
+            
             return x;
 
         }

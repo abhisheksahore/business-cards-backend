@@ -18,13 +18,12 @@ export class AuthController {
       email: body.email,
       password: body.password
     });
-    return res.status(200).send(response);
 
-    // if (response['status'] == 'success') {
-    //   return res.status(200).send(response);
-    // } else {
-    //   return res.status(400).send(response);
-    // }
+    if (response['status'] == 'success') {
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send(response);
+    }
 
   }
 
