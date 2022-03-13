@@ -21,10 +21,10 @@ export class FileUploadService {
             for(let fileName of names){
                 promises.push(this.getFileUrl(fileName));
             }
-            let signedUrls = await Promise.all(promises);
+            // let signedUrls = await Promise.all(promises);
             return {
                 status:'success',
-                data:signedUrls
+                data:names
             };
         }
         catch(err){
@@ -36,15 +36,28 @@ export class FileUploadService {
       
     }
 
-    async getFileUrl(filename){
-
-        let bucket = admin.storage().bucket('gs://booking-system-mad.appspot.com');
-        let oneHr = new Date(Date.now() + 1*60*60*1000);
-      
-        return (await bucket.file(filename).getSignedUrl({
-            action:'read',
-            expires: oneHr.getTime()
-        }))[0];
+    async getFileUrl(filenames : string[] ){
+        if(filenames.length === 0){
+            return {
+                status:"error",
+                message:'No files found'
+            }
+        }
+        let urls = [];
+        for(let filename of filenames){
+            let bucket = admin.storage().bucket('gs://booking-system-mad.appspot.com');
+            let oneday = new Date(Date.now() + 24*60*60*1000);
+        
+            urls.push((await bucket.file(filename).getSignedUrl({
+                action:'read',
+                expires: oneday.getTime()
+            }))[0]);
+        }
+        return {
+            status:'success',
+            urls
+        };
+        
     }
 
     async uploadFileToFirebase(file){

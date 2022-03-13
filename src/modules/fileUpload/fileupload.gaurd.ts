@@ -23,6 +23,7 @@ export class UploadGuard implements CanActivate {
            
         let totalSize = 0;
         if(!files[0]){
+           
             totalSize += files.size / (1024*1024);
             if(this.checkType(files.mimetype)){
                 throw new BadRequestException({
@@ -59,7 +60,7 @@ export class UploadGuard implements CanActivate {
             });
         }
         
-        return false;
+        return true;
     }
 
     checkType(type){

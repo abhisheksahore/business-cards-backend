@@ -1,6 +1,5 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
 import { FastifyReply } from 'fastify';
 import { SignupEmailDto } from './dto/signupEmail.dto';
 import { GoogleSignInDto } from './dto/googleSignin.dto';
