@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin'
+import { AuthGuard } from 'src/auth.gaurd';
 import { validEmail } from 'src/common/common.service';
 import { DBHelper } from 'src/common/helpers/db.helpers';
-import { getAuth } from 'firebase-admin/auth'
+
 @Injectable()
 export class AuthService {
 
     constructor(
-        private readonly dbHelper: DBHelper
+        private readonly dbHelper: DBHelper,
+        private readonly gaurdService: AuthGuard
     ){}
 
     async signupWithEmail(data: {
@@ -38,15 +40,13 @@ export class AuthService {
                 disabled: false,
             })
 
-            let db = admin.firestore();
-
-            await db.collection("users").doc(userDetail.uid).set({
+            await this.dbHelper.updateById('users',userDetail.uid,{
                 usedData: 0,
                 totalCards: 0,
                 email: data.email,
                 displayName: data.name,
-                cards:[],
             })
+
             return{
                 status:'success',
                 message:'user added successfully',
@@ -63,48 +63,32 @@ export class AuthService {
 
     async signInUsingToken(accessToken) {
 
-        let tokenRes = await this.verifyGoogleToken(accessToken);
+        let tokenRes = await this.gaurdService.verifyGoogleToken(accessToken);
         if (tokenRes['status'] === 'error') {
             return tokenRes;
         }
         else {
 
-            let db = admin.firestore();
-            let user = (await db.collection('users').doc(tokenRes['uid']).get()).data();
-            if(!user){
-                await db.collection("users").doc(tokenRes['uid']).set({
+            let user = await this.dbHelper.getDataById('users',tokenRes['uid']);
+
+            if(user['status'] === 'error'){
+              
+                await this.dbHelper.addById('users',tokenRes['uid'],{
                     usedData: 0,
                     totalCards: 0,
                     email: tokenRes['email'],
                     displayName: tokenRes['name'],
-                    cards:[]
-                })
+                });
                 return{
                     status:'success',
                     message:'user added successfully',
                 }
             }
-            console.log(user)
             return{
                 status:'success',
                 message:'user already exist',
             }
         }
     }
-
-    async verifyGoogleToken(token: string) {
-        try {
-            let x = await getAuth()
-                .verifyIdToken(token);
-            
-            return x;
-
-        }
-        catch (error) {
-            return{
-                status:'error',
-                message:error.message
-            }
-        }
-    }
+   
 }

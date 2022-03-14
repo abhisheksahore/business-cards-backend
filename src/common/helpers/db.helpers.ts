@@ -163,4 +163,9 @@ export class DBHelper {
         return await firestore.collection(collection).doc(id).set(data, { merge: true });
     }
 
+    async addById(collection: string, id: string, data: Record<string, any>) {
+        let firestore = admin.firestore();
+        return await firestore.collection(collection).doc(id).set(data);
+    }
+
 }

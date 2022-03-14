@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { trimCharsStart } from 'lodash/fp'
 import { ConstantsService } from './modules/shared/constant.service';
+import { getAuth } from 'firebase-admin/auth'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -20,7 +21,6 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
-    return true
     if (this.constant.skipAuth().includes(trimCharsStart('/', request.routerPath))) {
       // profiler.end();
       return true;
@@ -29,12 +29,37 @@ export class AuthGuard implements CanActivate {
     if (!request.headers || !request.headers.token) {
       throw new UnauthorizedException({
         status: false,
-        error: 'Invalid token',
+        error: 'No token found',
       });
     }
 
     const token = request.headers.token;
-    console.log(token);
+
+    let userDetails = await this.verifyGoogleToken(token);
+    if(userDetails['status'] === 'error'){
+      throw new UnauthorizedException({
+        status: false,
+        error: userDetails['message'],
+      });
+    }
+    request.headers.uid = userDetails['uid'];
     return true;
+  }
+
+  async verifyGoogleToken(token: string) {
+    try {
+      let x = await getAuth()
+        .verifyIdToken(token);
+
+      return x;
+
+    }
+    catch (error) {
+      return {
+        status: 'error',
+        message: error.message
+      }
+    }
+
   }
 }

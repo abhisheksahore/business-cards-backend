@@ -5,6 +5,7 @@ import { routes } from './app.routes';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth.gaurd';
 import { AuthModule } from './modules/authModule/auth.module';
+import { CardModule } from './modules/cardModule/card.module';
 import { FileUploadModule } from './modules/fileUpload/fileUpload.module';
 import { SharedModule } from './modules/shared/shared.module';
 
@@ -13,6 +14,7 @@ import { SharedModule } from './modules/shared/shared.module';
     SharedModule,
     FileUploadModule,
     AuthModule,
+    CardModule,
     RouterModule.register(routes),
   ],
   controllers: [AppController],

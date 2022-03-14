@@ -5,9 +5,15 @@ import {
     BadRequestException,
 } from "@nestjs/common";
 import { FastifyRequest } from "fastify";
+import { ConstantsService } from "../shared/constant.service";
 
 @Injectable()
 export class UploadGuard implements CanActivate {
+
+    constructor(
+        private readonly constants: ConstantsService
+    ) {}
+
     public async canActivate(ctx: ExecutionContext): Promise<boolean> {
         const req = ctx.switchToHttp().getRequest() as FastifyRequest;
         let files = req.raw['files'];
@@ -25,12 +31,12 @@ export class UploadGuard implements CanActivate {
         if(!files[0]){
            
             totalSize += files.size / (1024*1024);
-            if(this.checkType(files.mimetype)){
-                throw new BadRequestException({
-                    status:'error',
-                    message:files.mimetype + " type is not allowed"
-                });   
-            }
+            // if(this.checkType(files.mimetype)){
+            //     throw new BadRequestException({
+            //         status:'error',
+            //         message:files.mimetype + " type is not allowed"
+            //     });   
+            // }
             req['incomingFiles'] = [files];
         }
         else{
@@ -41,12 +47,12 @@ export class UploadGuard implements CanActivate {
             //     });
             // }
             for(let file of files){
-                if(this.checkType(files.mimetype)){
-                    throw new BadRequestException({
-                        status:'error',
-                        message:files.mimetype + " type is not allowed"
-                    });   
-                }
+                // if(this.checkType(files.mimetype)){
+                //     throw new BadRequestException({
+                //         status:'error',
+                //         message:files.mimetype + " type is not allowed"
+                //     });   
+                // }
                 totalSize += file.size / (1024*1024);
             }
             
@@ -64,11 +70,11 @@ export class UploadGuard implements CanActivate {
     }
 
     checkType(type){
-        let skip = ['image/','video/'];
+        let skip = this.constants.allowedTypes();
         
         let check = true;
         for(let skipType of skip){
-            if(type.includes(skipType)){
+            if(!type.includes(skipType)){
                 check = false;
                 break;
             }
