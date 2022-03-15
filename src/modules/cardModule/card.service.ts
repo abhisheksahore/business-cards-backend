@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from "fastify";
 import { DBHelper } from 'src/common/helpers/db.helpers';
-import * as admin from 'firebase-admin';
+import { CardCollection, UsersCollection } from 'src/common/collections/allCollections';
 
 @Injectable()
 export class CardService {
@@ -10,7 +10,8 @@ export class CardService {
   constructor(
     @Inject(REQUEST) private readonly request: FastifyRequest,
     private readonly dbHelper: DBHelper
-  ) { }
+  ) {
+  }
 
   async getCard(id) {
 
@@ -21,7 +22,7 @@ export class CardService {
       }
     }
 
-    let card = await this.dbHelper.getDataById('cards', id);
+    let card = await this.dbHelper.getDataById(CardCollection, id);
 
     if (card['status'] === 'error') {
       return card;
@@ -45,7 +46,7 @@ export class CardService {
       }
     }
 
-    let cards = await this.dbHelper.getData('cards', { id: uid.toString() });
+    let cards = await this.dbHelper.getData(CardCollection, { id: uid.toString() });
 
     if (cards['status'] === 'error') {
       return cards;
@@ -60,7 +61,7 @@ export class CardService {
 
   async changeCardStatus(id: string, published: boolean) {
     try {
-      await this.dbHelper.updateById('cards', id, { published });
+      await this.dbHelper.updateById(CardCollection, id, { published });
       return {
         status: 'success',
         message: 'Updated Successfully'
@@ -85,7 +86,7 @@ export class CardService {
       }
     }
 
-    let userDetails = await this.dbHelper.getDataById('users', uid.toString());
+    let userDetails = await this.dbHelper.getDataById(UsersCollection, uid.toString());
     if (userDetails['status'] === 'error') {
       return {
         status: 'error',
@@ -100,14 +101,53 @@ export class CardService {
       }
     }
 
-    await this.dbHelper.updateById('users', uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
-    await this.dbHelper.addRow('cards', data);
+    await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
+    let cardId = await this.dbHelper.addRow(CardCollection, data);
 
     return {
       status: 'success',
-      message: 'data added successfully'
+      message: 'data added successfully',
+      id: cardId
     }
 
+  }
+
+  async deleteCard(id: string) {
+
+    //changes
+    try {
+      let card = await this.dbHelper.getDataById(CardCollection, id);
+
+      await this.dbHelper.deleteById(CardCollection, id);
+
+      return {
+        status:'success',
+        message:'card deleted successfully'
+      }
+    }
+    catch(err){
+      return{
+        status:"error",
+        message:err.message
+      }
+    }
+    
+  }
+
+  async editCard(id,data){
+    try {
+      await this.dbHelper.updateById(CardCollection, id, data);
+      return {
+        status: 'success',
+        message: 'Updated Successfully'
+      }
+    }
+    catch (err) {
+      return {
+        status: 'error',
+        message: err.message
+      }
+    }
   }
 
 }

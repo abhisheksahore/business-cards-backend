@@ -4,7 +4,6 @@ import { FastifyReply } from 'fastify';
 import { CardService } from './card.service';
 import { CardDto } from './dto/card.dto';
 import { ChangeStatusDto } from './dto/changeStatus.dto';
-
 @Controller()
 export class CardController {
 
@@ -50,10 +49,38 @@ export class CardController {
   }
 
   @Post('createCard')
-  async createCard(@Body() body, @Res() res: FastifyReply){
-    
+  async createCard(@Body() body, @Res() res: FastifyReply) {
+    let response = await this.cardService.createCard(body);
+
+    if (response['status'] == 'success') {
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send(response);
+    }
   }
 
 
+  
+  @Put('deleteCard')
+  async deleteCard(@Query() query: CardDto, @Res() res: FastifyReply) {
+
+    let response = await this.cardService.deleteCard(query.id);
+    if (response['status'] == 'success') {
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send(response);
+    }
+
+  }
+
+  @Put('editCard')
+  async editCard(@Body() body, @Res() res: FastifyReply){
+    let response = await this.cardService.deleteCard(body);
+    if (response['status'] == 'success') {
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send(response);
+    }
+  }
 
 }

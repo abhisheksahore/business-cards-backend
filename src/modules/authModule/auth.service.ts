@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin'
 import { AuthGuard } from 'src/auth.gaurd';
+import { UsersCollection } from 'src/common/collections/allCollections';
 import { validEmail } from 'src/common/common.service';
 import { DBHelper } from 'src/common/helpers/db.helpers';
 
@@ -40,7 +41,7 @@ export class AuthService {
                 disabled: false,
             })
 
-            await this.dbHelper.updateById('users',userDetail.uid,{
+            await this.dbHelper.updateById(UsersCollection,userDetail.uid,{
                 usedData: 0,
                 totalCards: 0,
                 email: data.email,
@@ -69,11 +70,11 @@ export class AuthService {
         }
         else {
 
-            let user = await this.dbHelper.getDataById('users',tokenRes['uid']);
+            let user = await this.dbHelper.getDataById(UsersCollection,tokenRes['uid']);
 
             if(user['status'] === 'error'){
               
-                await this.dbHelper.addById('users',tokenRes['uid'],{
+                await this.dbHelper.addById(UsersCollection,tokenRes['uid'],{
                     usedData: 0,
                     totalCards: 0,
                     email: tokenRes['email'],
