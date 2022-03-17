@@ -2,8 +2,9 @@ import { Body, Controller, Get, Headers, Param, Post, Put, Query, Res } from '@n
 import { query } from 'express';
 import { FastifyReply } from 'fastify';
 import { CardService } from './card.service';
-import { CardDto } from './dto/card.dto';
+import { GetCardDto } from './dto/getcard.dto';
 import { ChangeStatusDto } from './dto/changeStatus.dto';
+import { CardDto } from './dto/cardDto';
 @Controller()
 export class CardController {
 
@@ -12,7 +13,7 @@ export class CardController {
   ) { }
 
   @Get('getCard')
-  async getCard(@Query() query: CardDto, @Res() res: FastifyReply) {
+  async getCard(@Query() query: GetCardDto, @Res() res: FastifyReply) {
 
     let id = query.id;
     let response = await this.cardService.getCard(id);
@@ -49,8 +50,27 @@ export class CardController {
   }
 
   @Post('createCard')
-  async createCard(@Body() body, @Res() res: FastifyReply) {
-    let response = await this.cardService.createCard(body);
+  async createCard(@Body() body: CardDto, @Res() res: FastifyReply) {
+
+    let data = {
+      Name: body.Name ? body.Name : '',
+      BusinessName: body.BusinessName ? body.BusinessName : '',
+      DescribeYourself: body.DescribeYourself ? body.DescribeYourself : '',
+      ProfilePicture: body.ProfilePicture ? body.ProfilePicture : '',
+      Logo: body.Logo ? body.Logo : '',
+      PrimaryButtons: body.PrimaryButtons ? body.PrimaryButtons : [],
+      Telegram: body.Telegram ? body.Telegram : '',
+      Call: body.Call ? body.Call : '',
+      WhatsApp: body.WhatsApp ? body.WhatsApp : '',
+      Mail: body.Mail ? body.Mail : '',
+      Website: body.Website ? body.Website : '',
+      Location: body.Location ? body.Location : '',
+      ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
+      published: body.published ? body.published : false,
+      uid: ''
+    }
+
+    let response = await this.cardService.createCard(data);
 
     if (response['status'] == 'success') {
       return res.status(200).send(response);
@@ -60,9 +80,9 @@ export class CardController {
   }
 
 
-  
+
   @Put('deleteCard')
-  async deleteCard(@Query() query: CardDto, @Res() res: FastifyReply) {
+  async deleteCard(@Query() query: GetCardDto, @Res() res: FastifyReply) {
 
     let response = await this.cardService.deleteCard(query.id);
     if (response['status'] == 'success') {
@@ -74,13 +94,43 @@ export class CardController {
   }
 
   @Put('editCard')
-  async editCard(@Body() body, @Res() res: FastifyReply){
-    let response = await this.cardService.deleteCard(body);
+  async editCard(@Query() query: GetCardDto, @Body() body: CardDto, @Res() res: FastifyReply) {
+
+    let data = {
+      Name: body.Name ? body.Name : '',
+      BusinessName: body.BusinessName ? body.BusinessName : '',
+      DescribeYourself: body.DescribeYourself ? body.DescribeYourself : '',
+      ProfilePicture: body.ProfilePicture ? body.ProfilePicture : '',
+      Logo: body.Logo ? body.Logo : '',
+      PrimaryButtons: body.PrimaryButtons ? body.PrimaryButtons : [],
+      Telegram: body.Telegram ? body.Telegram : '',
+      Call: body.Call ? body.Call : '',
+      WhatsApp: body.WhatsApp ? body.WhatsApp : '',
+      Mail: body.Mail ? body.Mail : '',
+      Website: body.Website ? body.Website : '',
+      Location: body.Location ? body.Location : '',
+      ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
+      published: body.published ? body.published : false,
+    }
+
+    let response = await this.cardService.editCard(query.id, data);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
     } else {
       return res.status(400).send(response);
     }
+  }
+
+  @Get('createQr')
+  async createCardQr(@Query() query:GetCardDto, @Res() res: FastifyReply) {
+
+    let response = await this.cardService.createQR(query.id);
+    if (response['status'] == 'success') {
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send(response);
+    }
+
   }
 
 }

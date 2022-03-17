@@ -3,7 +3,8 @@ import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from "fastify";
 import { DBHelper } from 'src/common/helpers/db.helpers';
 import { CardCollection, UsersCollection } from 'src/common/collections/allCollections';
-
+import * as qr from 'qrcode'
+import * as admin from 'firebase-admin'
 @Injectable()
 export class CardService {
 
@@ -46,7 +47,7 @@ export class CardService {
       }
     }
 
-    let cards = await this.dbHelper.getData(CardCollection, { id: uid.toString() });
+    let cards = await this.dbHelper.getData(CardCollection, { uid: uid.toString() });
 
     if (cards['status'] === 'error') {
       return cards;
@@ -76,7 +77,22 @@ export class CardService {
 
   }
 
-  async createCard(data) {
+  async createCard(data: {
+    Name?: string,
+    BusinessName?: string,
+    DescribeYourself?: string,
+    ProfilePicture?: string,
+    Logo?: string,
+    PrimaryButtons?: Array<any>,
+    Telegram?: string,
+    Call?: string,
+    WhatsApp?: string,
+    Mail?: string,
+    Website?: string,
+    Location?: string,
+    ProFeaturesList?: Array<any>,
+    uid?: string
+  }) {
     let uid = this.request.headers.uid;
 
     if (!uid) {
@@ -102,7 +118,8 @@ export class CardService {
     }
 
     await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
-    let cardId = await this.dbHelper.addRow(CardCollection, data);
+    data.uid = uid.toString();
+    let cardId = await this.dbHelper.addRow(CardCollection, { ...data });
 
     return {
       status: 'success',
@@ -121,20 +138,20 @@ export class CardService {
       await this.dbHelper.deleteById(CardCollection, id);
 
       return {
-        status:'success',
-        message:'card deleted successfully'
+        status: 'success',
+        message: 'card deleted successfully'
       }
     }
-    catch(err){
-      return{
-        status:"error",
-        message:err.message
+    catch (err) {
+      return {
+        status: "error",
+        message: err.message
       }
     }
-    
+
   }
 
-  async editCard(id,data){
+  async editCard(id, data) {
     try {
       await this.dbHelper.updateById(CardCollection, id, data);
       return {
@@ -150,4 +167,33 @@ export class CardService {
     }
   }
 
+  async createQR(id) {
+
+    try {
+      let url = await qr.toDataURL('mysite12443/' + id);
+
+      const storageRef = admin.storage().bucket(process.env.BUCKET_NAME);
+
+      let name = id + Date.now() + '.png'
+     
+      const fileRef = storageRef.file(name);
+
+      let file = Buffer.from(url.split("base64,")[1], 'base64');
+      await fileRef.save(file, {
+        public: true,
+        contentType: 'image/png'
+      });
+
+      return {
+        status: 'success',
+        data: (await storageRef.file(name).publicUrl()),
+      }
+
+    } catch (err) {
+      return {
+        status: 'error',
+        message: err.message
+      }
+    }
+  }
 }

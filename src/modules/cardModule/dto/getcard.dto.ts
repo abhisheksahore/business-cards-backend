@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsBoolean, IsMobilePhone, IsArray } from 'class-validator';
 
-export class CardDto {
+export class GetCardDto {
     @ApiProperty({
         description: 'Card id',
         default: '',

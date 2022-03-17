@@ -36,6 +36,7 @@
     "firebase-admin": "^10.0.2",
     "i": "^0.3.7",
     "npm": "^8.5.4",
+    "qrcode": "^1.5.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

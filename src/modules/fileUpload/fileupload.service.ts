@@ -45,7 +45,7 @@ export class FileUploadService {
         }
         let urls = [];
         for(let filename of filenames){
-            let bucket = admin.storage().bucket('gs://booking-system-mad.appspot.com');
+            let bucket = admin.storage().bucket(process.env.BUCKET_NAME);
             let oneday = new Date(Date.now() + 24*60*60*1000);
         
             urls.push((await bucket.file(filename).getSignedUrl({
@@ -63,8 +63,8 @@ export class FileUploadService {
     async uploadFileToFirebase(file){
 
         let filename =  Date.now().toString() + file.name;
-        let bucket = admin.storage().bucket('gs://booking-system-mad.appspot.com');
-        await bucket.file(filename).save(file.data,{public:true});
+        let bucket = admin.storage().bucket(process.env.BUCKET_NAME);
+        await bucket.file(filename).save(file.data);
         return filename;
     }
 
