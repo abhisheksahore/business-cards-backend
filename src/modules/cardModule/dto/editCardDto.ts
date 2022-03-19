@@ -1,16 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsBoolean, IsMobilePhone, IsArray, IsOptional } from 'class-validator';
 
-export class CardDto {
-
-    @ApiProperty({
-        description: 'User Id of user',
-        default: '',
-        required: false
-    })
-    @IsString()
-    @IsOptional()
-    uid: string;
+export class EditCardDto {
 
     @ApiProperty({
         description: 'Name of user',
@@ -262,7 +253,7 @@ export class CardDto {
     })
     @IsString()
     @IsOptional()
-    instagram: string;    
+    instagram: string;   
 
     @ApiProperty({
         description: 'youtube of user',
@@ -454,31 +445,5 @@ export class CardDto {
     @IsArray()
     @IsOptional()
     ProFeaturesList: Array<any>;
-
-    @ApiProperty({
-        description: 'Card live or not',
-        default: false,
-        required: false
-    })
-    @IsBoolean()
-    @IsOptional()
-    published: boolean;
-
-    @ApiProperty({
-        description: 'View count of card',
-        default: 0,
-        required: false
-    })
-    @IsString()
-    @IsOptional()
-    viewCount: number;
-
-    @ApiProperty({
-        description: 'Unique card slug',
-        default: '',
-        required: true
-    })
-    @IsString()
-    cardSlug: string;
 
 }

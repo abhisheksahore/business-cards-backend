@@ -83,23 +83,7 @@ export class CardService {
 
   }
 
-  async createCard(data: {
-    Name?: string,
-    BusinessName?: string,
-    DescribeYourself?: string,
-    ProfilePicture?: string,
-    Logo?: string,
-    PrimaryButtons?: Array<any>,
-    Telegram?: string,
-    Call?: string,
-    WhatsApp?: string,
-    Mail?: string,
-    Website?: string,
-    Location?: string,
-    ProFeaturesList?: Array<any>,
-    uid?: string,
-    viewCount: number
-  }) {
+  async createCard(data) {
     let uid = this.request.headers.uid;
 
     if (!uid) {
@@ -121,6 +105,13 @@ export class CardService {
       return {
         status: 'error',
         message: 'User can have max of 2 cards'
+      }
+    }
+
+    if(this.checkSlugExist(data.cardSlug)){
+      return {
+        status: 'error',
+        message: 'Slug already exist'
       }
     }
 
@@ -203,4 +194,21 @@ export class CardService {
       }
     }
   }
+
+  async checkSlugExist(slug: string) {
+
+    if (!slug) {
+      return false;
+    }
+
+    let cards = await this.dbHelper.getData(CardCollection, {
+      cardSlug: slug
+    })
+
+    if (cards.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
 }
