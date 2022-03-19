@@ -39,4 +39,20 @@ export class FileUploadController {
 
     }
 
+
+    @Post('deletefiles')
+    async deleteFiles(@Body() body:SignedUrlDto, @Res() res: FastifyReply) {
+        let urls = body.urls;
+        
+        let response = await this.fileUploadService.deleteFiles(urls);
+
+        if (response['status'] == 'success') {
+            return res.status(200).send(response);
+        } else {
+            return res.status(400).send(response);
+        }
+
+    }
+
+
 }

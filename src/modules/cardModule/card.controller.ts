@@ -16,7 +16,8 @@ export class CardController {
   async getCard(@Query() query: GetCardDto, @Res() res: FastifyReply) {
 
     let id = query.id;
-    let response = await this.cardService.getCard(id);
+    let viewCount = query.isCount ? query.isCount : false;
+    let response = await this.cardService.getCard(id, viewCount);
 
     if (response['status'] == 'success') {
       return res.status(200).send(response);
@@ -67,7 +68,8 @@ export class CardController {
       Location: body.Location ? body.Location : '',
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
       published: body.published ? body.published : false,
-      uid: ''
+      uid: '',
+      viewCount: 0,
     }
 
     let response = await this.cardService.createCard(data);
@@ -122,7 +124,7 @@ export class CardController {
   }
 
   @Get('createQr')
-  async createCardQr(@Query() query:GetCardDto, @Res() res: FastifyReply) {
+  async createCardQr(@Query() query: GetCardDto, @Res() res: FastifyReply) {
 
     let response = await this.cardService.createQR(query.id);
     if (response['status'] == 'success') {

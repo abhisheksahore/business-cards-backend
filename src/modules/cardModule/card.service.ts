@@ -14,7 +14,7 @@ export class CardService {
   ) {
   }
 
-  async getCard(id) {
+  async getCard(id, viewCount) {
 
     if (!id) {
       return {
@@ -24,6 +24,12 @@ export class CardService {
     }
 
     let card = await this.dbHelper.getDataById(CardCollection, id);
+
+    if (viewCount) {
+      await this.dbHelper.updateById(CardCollection, id, {
+        viewCount: card.viewCount + 1
+      });
+    }
 
     if (card['status'] === 'error') {
       return card;
@@ -91,7 +97,8 @@ export class CardService {
     Website?: string,
     Location?: string,
     ProFeaturesList?: Array<any>,
-    uid?: string
+    uid?: string,
+    viewCount: number
   }) {
     let uid = this.request.headers.uid;
 
@@ -175,7 +182,7 @@ export class CardService {
       const storageRef = admin.storage().bucket(process.env.BUCKET_NAME);
 
       let name = id + Date.now() + '.png'
-     
+
       const fileRef = storageRef.file(name);
 
       let file = Buffer.from(url.split("base64,")[1], 'base64');

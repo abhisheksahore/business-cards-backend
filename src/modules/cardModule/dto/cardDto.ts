@@ -15,10 +15,9 @@ export class CardDto {
     @ApiProperty({
         description: 'Name of user',
         default: '',
-        required: false
+        required: true
     })
     @IsString()
-    @IsOptional()
     Name: string;
 
     @ApiProperty({
@@ -29,6 +28,51 @@ export class CardDto {
     @IsString()
     @IsOptional()
     BusinessName: string;
+
+    @ApiProperty({
+        description: 'Gender of user',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    genderPronouns: string;
+
+    @ApiProperty({
+        description: 'Job of user',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    jobTitle: string;
+
+    @ApiProperty({
+        description: 'Business description',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    businessDescription: string;
+
+    @ApiProperty({
+        description: 'Card Name',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    cardName: string;
+
+    @ApiProperty({
+        description: 'Card url',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    cardUrl: string;
 
     @ApiProperty({
         description: 'About user',
@@ -47,6 +91,15 @@ export class CardDto {
     @IsString()
     @IsOptional()
     ProfilePicture: string;
+
+    @ApiProperty({
+        description: 'cover pic ',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    coverPhoto: string;
 
     @ApiProperty({
         description: 'Logo name',
@@ -139,5 +192,22 @@ export class CardDto {
     @IsBoolean()
     @IsOptional()
     published: boolean;
+
+    @ApiProperty({
+        description: 'View count of card',
+        default: 0,
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    viewCount: number;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    cardSlug: string;
 
 }

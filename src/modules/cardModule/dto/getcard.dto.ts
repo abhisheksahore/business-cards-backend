@@ -10,4 +10,12 @@ export class GetCardDto {
     @IsString()
     id: string;
 
+    @ApiProperty({
+        description: 'increase count or not',
+        default: false,
+        required: false
+    })
+    @IsBoolean()
+    isCount: boolean;
+
 }
