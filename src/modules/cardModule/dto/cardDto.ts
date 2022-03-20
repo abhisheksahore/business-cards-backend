@@ -59,20 +59,10 @@ export class CardDto {
     @ApiProperty({
         description: 'Card Name',
         default: '',
-        required: false
+        required: true
     })
     @IsString()
-    @IsOptional()
     cardName: string;
-
-    @ApiProperty({
-        description: 'Card url',
-        default: '',
-        required: false
-    })
-    @IsString()
-    @IsOptional()
-    cardUrl: string;
 
     @ApiProperty({
         description: 'About user',

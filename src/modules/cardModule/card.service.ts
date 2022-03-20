@@ -3,7 +3,7 @@ import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from "fastify";
 import { DBHelper } from 'src/common/helpers/db.helpers';
 import { CardCollection, UsersCollection } from 'src/common/collections/allCollections';
-import * as qr from 'qrcode'
+var qr = require('qrcode')
 import * as admin from 'firebase-admin'
 @Injectable()
 export class CardService {
@@ -108,7 +108,7 @@ export class CardService {
       }
     }
 
-    if(this.checkSlugExist(data.cardSlug)){
+    if(await this.checkSlugExist(data.cardSlug)){
       return {
         status: 'error',
         message: 'Slug already exist'
@@ -198,13 +198,14 @@ export class CardService {
   async checkSlugExist(slug: string) {
 
     if (!slug) {
-      return false;
+      return true;
     }
 
     let cards = await this.dbHelper.getData(CardCollection, {
       cardSlug: slug
     })
 
+    console.log(cards)
     if (cards.length > 0) {
       return true;
     }

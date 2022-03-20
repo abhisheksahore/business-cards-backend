@@ -62,7 +62,7 @@ export class FileUploadService {
 
     async uploadFileToFirebase(file) {
 
-        let filename = Date.now().toString() + file.name;
+        let filename = file.name;
         let bucket = admin.storage().bucket(process.env.BUCKET_NAME);
         await bucket.file(filename).save(file.data);
         return filename;
