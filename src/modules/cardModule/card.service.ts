@@ -108,7 +108,7 @@ export class CardService {
       }
     }
 
-    if(await this.checkSlugExist(data.cardSlug)){
+    if (await this.checkSlugExist(data.cardSlug)) {
       return {
         status: 'error',
         message: 'Slug already exist'
@@ -130,10 +130,34 @@ export class CardService {
   async deleteCard(id: string) {
 
     //changes
-    try {
-      let card = await this.dbHelper.getDataById(CardCollection, id);
+    let uid = this.request.headers.uid;
 
-      await this.dbHelper.deleteById(CardCollection, id);
+    if (!uid) {
+      return {
+        status: 'error',
+        message: 'user not found'
+      }
+    }
+    try {
+      let userDetails = await this.dbHelper.getDataById(UsersCollection, uid.toString());
+      if (userDetails['status'] === 'error') {
+        return {
+          status: 'error',
+          message: 'User not found'
+        }
+      }
+      let card = await this.dbHelper.getDataById(CardCollection, id);
+      if (card['status'] === 'error' || card.uid !== uid) {
+        return {
+          status: 'error',
+          message: 'card not found with this user'
+        }
+      }
+      else {
+        await this.dbHelper.deleteById(CardCollection, id);
+
+        await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] - 1 });
+      }
 
       return {
         status: 'success',
