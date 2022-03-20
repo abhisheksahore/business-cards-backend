@@ -115,15 +115,24 @@ export class CardService {
       }
     }
 
-    await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
-    data.uid = uid.toString();
-    let cardId = await this.dbHelper.addRow(CardCollection, { ...data });
+    try {
+      await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
+      data.uid = uid.toString();
+      let cardId = await this.dbHelper.addRow(CardCollection, { ...data });
 
-    return {
-      status: 'success',
-      message: 'data added successfully',
-      id: cardId
+      return {
+        status: 'success',
+        message: 'data added successfully',
+        id: cardId
+      }
     }
+    catch(err){
+      return {
+        status: 'error',
+        message: err.message
+      }
+    }
+    
 
   }
 
