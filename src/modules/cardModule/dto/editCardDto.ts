@@ -98,7 +98,7 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    PrimaryButtons: Array<any>;
+    PrimaryButtons: any;
 
     @ApiProperty({
         description: 'Social media',
@@ -107,7 +107,7 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    socialMedia: Array<any>;
+    socialMedia: any;
 
     @ApiProperty({
         description: 'Commerce options',
@@ -116,7 +116,7 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    commerce: Array<any>;
+    commerce: any;
 
     @ApiProperty({
         description: 'Telegram Link',
@@ -434,6 +434,6 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    ProFeaturesList: Array<any>;
+    ProFeaturesList: any;
 
 }

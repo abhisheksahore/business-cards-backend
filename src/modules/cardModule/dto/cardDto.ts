@@ -107,7 +107,7 @@ export class CardDto {
     })
     @IsArray()
     @IsOptional()
-    PrimaryButtons: Array<any>;
+    PrimaryButtons: any;
 
     @ApiProperty({
         description: 'Social media',
@@ -116,7 +116,7 @@ export class CardDto {
     })
     @IsArray()
     @IsOptional()
-    socialMedia: Array<any>;
+    socialMedia: any;
 
     @ApiProperty({
         description: 'Commerce options',
@@ -125,7 +125,7 @@ export class CardDto {
     })
     @IsArray()
     @IsOptional()
-    commerce: Array<any>;
+    commerce: any;
 
     @ApiProperty({
         description: 'Telegram Link',
@@ -443,7 +443,7 @@ export class CardDto {
     })
     @IsArray()
     @IsOptional()
-    ProFeaturesList: Array<any>;
+    ProFeaturesList: any;
 
     @ApiProperty({
         description: 'Card live or not',

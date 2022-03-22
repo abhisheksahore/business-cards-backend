@@ -55,6 +55,7 @@ export class CardController {
   @Post('createCard')
   async createCard(@Body() body: CardDto, @Res() res: FastifyReply) {
 
+    console.log(body.ProFeaturesList)
     let data = {
       Name: body.Name,
       BusinessName: body.BusinessName ? body.BusinessName : '',

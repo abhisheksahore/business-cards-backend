@@ -24,10 +24,6 @@ export class CardService {
     }
 
     let card = await this.dbHelper.getDataById(CardCollection, id);
-    card.PrimaryButtons = JSON.parse(card.PrimaryButtons);
-    card.socialMedia = JSON.parse(card.socialMedia);
-    card.commerce = JSON.parse(card.commerce);
-    card.ProFeaturesList = JSON.parse(card.ProFeaturesList);
 
     if (viewCount) {
       await this.dbHelper.updateById(CardCollection, id, {
@@ -120,14 +116,10 @@ export class CardService {
     }
 
     try {
-      await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
       data.uid = uid.toString();
-      data.PrimaryButtons = JSON.stringify(data.PrimaryButtons);
-      data.socialMedia = JSON.stringify(data.socialMedia);
-      data.commerce = JSON.stringify(data.commerce);
-      data.ProFeaturesList = JSON.stringify(data.ProFeaturesList);
 
       let cardId = await this.dbHelper.addRow(CardCollection, { ...data });
+      await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
 
       return {
         status: 'success',
