@@ -55,7 +55,6 @@ export class CardController {
   @Post('createCard')
   async createCard(@Body() body: CardDto, @Res() res: FastifyReply) {
 
-    console.log(body.ProFeaturesList)
     let data = {
       Name: body.Name,
       BusinessName: body.BusinessName ? body.BusinessName : '',
@@ -104,6 +103,13 @@ export class CardController {
       amazonStore: body.amazonStore ? body.amazonStore : '',
       eBayStore: body.eBayStore ? body.eBayStore : '',
       yelp: body.yelp ? body.yelp : '',
+      SaveToContact: body.SaveToContact ? body.SaveToContact : '',
+      logoBackgroundColor: body.logoBackgroundColor ? body.logoBackgroundColor : '',
+      mainBackgroundColor: body.mainBackgroundColor ? body.mainBackgroundColor : '',
+      buttonBackgroundColor: body.buttonBackgroundColor ? body.buttonBackgroundColor : '',
+      cardBackgroundColor: body.cardBackgroundColor ? body.cardBackgroundColor : '',
+      fontColor: body.fontColor ? body.fontColor : '',
+      font: body.font ? body.font : '',
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
       published: body.published ? body.published : false,
       uid: '',
@@ -186,6 +192,13 @@ export class CardController {
       amazonStore: body.amazonStore ? body.amazonStore : '',
       eBayStore: body.eBayStore ? body.eBayStore : '',
       yelp: body.yelp ? body.yelp : '',
+      SaveToContact: body.SaveToContact ? body.SaveToContact : '',
+      logoBackgroundColor: body.logoBackgroundColor ? body.logoBackgroundColor : '',
+      mainBackgroundColor: body.mainBackgroundColor ? body.mainBackgroundColor : '',
+      buttonBackgroundColor: body.buttonBackgroundColor ? body.buttonBackgroundColor : '',
+      cardBackgroundColor: body.cardBackgroundColor ? body.cardBackgroundColor : '',
+      fontColor: body.fontColor ? body.fontColor : '',
+      font: body.font ? body.font : '',
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
     }
 

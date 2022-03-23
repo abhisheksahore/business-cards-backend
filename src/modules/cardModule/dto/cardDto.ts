@@ -436,6 +436,71 @@ export class CardDto {
     yelp: string;
 
     @ApiProperty({
+        description: 'save to contact',
+        default: false,
+        required: false
+    })
+    @IsBoolean()
+    @IsOptional()
+    SaveToContact: boolean;
+
+    // colors
+    @ApiProperty({
+        description: 'Logo Background ',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    logoBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Background Color',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    mainBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Button Background',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    buttonBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Card Background',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    cardBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Font Color',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    fontColor: string;
+
+    // fonts
+    @ApiProperty({
+        description: 'Font used',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    font: "'Montserrat', sans - serif";
+
+    @ApiProperty({
         description: 'Pro Features',
         default: [],
         required: false
