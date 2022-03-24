@@ -118,7 +118,7 @@ export class CardService {
     try {
       data.uid = uid.toString();
 
-      let cardId = await this.dbHelper.addRow(CardCollection, { ...data });
+      let cardId = await this.dbHelper.addRow(CardCollection, { ...data, createdAt: Date.now(), updatedAt: Date.now()});
       await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
 
       return {
@@ -184,7 +184,7 @@ export class CardService {
 
   async editCard(id, data) {
     try {
-      await this.dbHelper.updateById(CardCollection, id, data);
+      await this.dbHelper.updateById(CardCollection, id, {...data, updatedAt: Date.now()});
       return {
         status: 'success',
         message: 'Updated Successfully'
