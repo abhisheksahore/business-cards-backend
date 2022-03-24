@@ -16,12 +16,12 @@ export class CardController {
   ) { }
 
   @Get('getCard')
-  async getCard(@Query() query: GetCardDto, @Headers() headers: GetCardHeaderDto, @Res() res: FastifyReply) {
+  async getCard(@Query() query: GetCardDto, @Res() res: FastifyReply) {
 
     let id = query.id;
     let viewCount = query.isCount ? query.isCount : false;
-    let uid = headers.uid;
-    let response = await this.cardService.getCard(id, uid, viewCount);
+
+    let response = await this.cardService.getCard(id, viewCount);
 
     if (response['status'] == 'success') {
       return res.status(200).send(response);

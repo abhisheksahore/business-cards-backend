@@ -5,16 +5,18 @@ import { DBHelper } from 'src/common/helpers/db.helpers';
 import { CardCollection, UsersCollection } from 'src/common/collections/allCollections';
 var qr = require('qrcode')
 import * as admin from 'firebase-admin'
+import { AuthGuard } from 'src/auth.gaurd';
 @Injectable()
 export class CardService {
 
   constructor(
     @Inject(REQUEST) private readonly request: FastifyRequest,
-    private readonly dbHelper: DBHelper
+    private readonly dbHelper: DBHelper,
+    private readonly authGaurd: AuthGuard
   ) {
   }
 
-  async getCard(id, uid, viewCount) {
+  async getCard(id, viewCount) {
 
     if (!id) {
       return {
@@ -22,40 +24,35 @@ export class CardService {
         message: 'No id found'
       }
     }
-    if (!uid) {
-      return {
-        status: "error",
-        message: 'No user_id found'
-      }
-    }
 
     let card = await this.dbHelper.getDataById(CardCollection, id);
 
-    if(card['status'] === 'error'){
+    if (card['status'] === 'error') {
       return card
     }
 
-    if(!card.published && card.uid != uid){
-      return {
-        status: 'error',
-        message: 'Card is not published by user'
-      }
+    let token: string = this.request.headers['token'] ? this.request.headers['token'].toString() : '';
+    let res = await this.authGaurd.verifyGoogleToken(token);
+    let uid = '';
+    if(res['uid']){
+      uid = res['uid'];
+    }
+    if (!card.published && (!uid || card.uid !== uid)) {
+
+        return {
+          status: 'error',
+          message: 'Card is not published by user'
+        }     
     }
 
-    if (viewCount) {
+    if (viewCount && card.published && (card.uid !== uid)) {
       await this.dbHelper.updateById(CardCollection, id, {
         viewCount: card.viewCount + 1
       });
     }
-
-    if (card['status'] === 'error') {
-      return card;
-    }
-    else {
-      return {
-        status: 'success',
-        data: card
-      }
+    return {
+      status: 'success',
+      data: card
     }
 
   }
@@ -135,7 +132,7 @@ export class CardService {
     try {
       data.uid = uid.toString();
 
-      let cardId = await this.dbHelper.addRow(CardCollection, { ...data, createdAt: Date.now(), updatedAt: Date.now()});
+      let cardId = await this.dbHelper.addRow(CardCollection, { ...data, createdAt: Date.now(), updatedAt: Date.now() });
       await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
 
       return {
@@ -201,7 +198,7 @@ export class CardService {
 
   async editCard(id, data) {
     try {
-      await this.dbHelper.updateById(CardCollection, id, {...data, updatedAt: Date.now()});
+      await this.dbHelper.updateById(CardCollection, id, { ...data, updatedAt: Date.now() });
       return {
         status: 'success',
         message: 'Updated Successfully'

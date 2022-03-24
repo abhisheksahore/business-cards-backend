@@ -50,7 +50,6 @@ export class AuthGuard implements CanActivate {
     try {
       let x = await getAuth()
         .verifyIdToken(token);
-
       return x;
 
     }
