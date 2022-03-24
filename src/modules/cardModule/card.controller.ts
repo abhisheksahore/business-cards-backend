@@ -7,6 +7,7 @@ import { ChangeStatusDto } from './dto/changeStatus.dto';
 import { CardDto } from './dto/cardDto';
 import { CheckSlugDto } from './dto/checkSlug.dto';
 import { EditCardDto } from './dto/editCardDto';
+import { GetCardHeaderDto } from './dto/getCardHeader.dto';
 @Controller()
 export class CardController {
 
@@ -15,11 +16,12 @@ export class CardController {
   ) { }
 
   @Get('getCard')
-  async getCard(@Query() query: GetCardDto, @Res() res: FastifyReply) {
+  async getCard(@Query() query: GetCardDto, @Headers() headers: GetCardHeaderDto, @Res() res: FastifyReply) {
 
     let id = query.id;
     let viewCount = query.isCount ? query.isCount : false;
-    let response = await this.cardService.getCard(id, viewCount);
+    let uid = headers.uid;
+    let response = await this.cardService.getCard(id, uid, viewCount);
 
     if (response['status'] == 'success') {
       return res.status(200).send(response);

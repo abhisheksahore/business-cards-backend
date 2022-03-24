@@ -14,7 +14,7 @@ export class CardService {
   ) {
   }
 
-  async getCard(id, viewCount) {
+  async getCard(id, uid, viewCount) {
 
     if (!id) {
       return {
@@ -22,8 +22,25 @@ export class CardService {
         message: 'No id found'
       }
     }
+    if (!uid) {
+      return {
+        status: "error",
+        message: 'No user_id found'
+      }
+    }
 
     let card = await this.dbHelper.getDataById(CardCollection, id);
+
+    if(card['status'] === 'error'){
+      return card
+    }
+
+    if(!card.published && card.uid != uid){
+      return {
+        status: 'error',
+        message: 'Card is not published by user'
+      }
+    }
 
     if (viewCount) {
       await this.dbHelper.updateById(CardCollection, id, {
