@@ -6,13 +6,15 @@ import { CardCollection, UsersCollection } from 'src/common/collections/allColle
 var qr = require('qrcode')
 import * as admin from 'firebase-admin'
 import { AuthGuard } from 'src/auth.gaurd';
+import { FileUploadService } from '../fileUpload/fileupload.service';
 @Injectable()
 export class CardService {
 
   constructor(
     @Inject(REQUEST) private readonly request: FastifyRequest,
     private readonly dbHelper: DBHelper,
-    private readonly authGaurd: AuthGuard
+    private readonly authGaurd: AuthGuard,
+    private readonly fileUploadService: FileUploadService
   ) {
   }
 
@@ -34,15 +36,15 @@ export class CardService {
     let token: string = this.request.headers['token'] ? this.request.headers['token'].toString() : '';
     let res = await this.authGaurd.verifyGoogleToken(token);
     let uid = '';
-    if(res['uid']){
+    if (res['uid']) {
       uid = res['uid'];
     }
     if (!card.published && (!uid || card.uid !== uid)) {
 
-        return {
-          status: 'error',
-          message: 'Card is not published by user'
-        }     
+      return {
+        status: 'error',
+        message: 'Card is not published by user'
+      }
     }
 
     if (viewCount && card.published && (card.uid !== uid)) {
@@ -50,11 +52,56 @@ export class CardService {
         viewCount: card.viewCount + 1
       });
     }
+
+    card = await this.changeCardImagesToUrl(card);
+
     return {
       status: 'success',
       data: card
     }
 
+  }
+
+
+  async changeCardImagesToUrl(card) {
+
+    if (card.Logo) {
+      let url = await this.fileUploadService.getFileUrl([card.Logo]);
+      if (url['status'] === 'success') {
+        card.Logo = url.urls[0];
+      }
+    }
+
+    if (card.ProfilePicture) {
+      let url = await this.fileUploadService.getFileUrl([card.ProfilePicture]);
+      if (url['status'] === 'success') {
+        card.ProfilePicture = url.urls[0];
+      }
+    }
+
+    if (card.coverPhoto) {
+      let url = await this.fileUploadService.getFileUrl([card.coverPhoto]);
+      if (url['status'] === 'success') {
+        card.coverPhoto = url.urls[0];
+      }
+    }
+
+    for(let ele of card.ProFeaturesList){
+      if(ele.image){
+        let url = await this.fileUploadService.getFileUrl([ele.image]);
+        if (url['status'] === 'success') {
+          ele.image = url.urls[0];
+        }
+      }
+      if(ele.images){
+        let url = await this.fileUploadService.getFileUrl(ele.images);
+        if (url['status'] === 'success') {
+          ele.images = url.urls;
+        }
+      }
+    }
+
+    return card;
   }
 
   async getAllCards() {
