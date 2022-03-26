@@ -65,24 +65,45 @@ export class CardService {
 
   async changeCardImagesToUrl(card) {
 
+    card.Logo = {
+      name: card.Logo,
+      url: ''
+    };
     if (card.Logo) {
-      let url = await this.fileUploadService.getFileUrl([card.Logo]);
+      let url = await this.fileUploadService.getFileUrl([card.Logo.name]);
       if (url['status'] === 'success') {
-        card.Logo = url.urls[0];
+        card.Logo = {
+          name: card.Logo.name,
+          url: url.urls[0]
+        };
       }
     }
 
+    card.ProfilePicture = {
+      name: card.ProfilePicture,
+      url: ''
+    };
     if (card.ProfilePicture) {
-      let url = await this.fileUploadService.getFileUrl([card.ProfilePicture]);
+      let url = await this.fileUploadService.getFileUrl([card.ProfilePicture.name]);
       if (url['status'] === 'success') {
-        card.ProfilePicture = url.urls[0];
+        card.ProfilePicture = card.ProfilePicture = {
+          name: card.ProfilePicture.name,
+          url: url.urls[0]
+        };
       }
     }
 
+    card.coverPhoto = {
+      name: card.coverPhoto,
+      url: ''
+    };
     if (card.coverPhoto) {
-      let url = await this.fileUploadService.getFileUrl([card.coverPhoto]);
+      let url = await this.fileUploadService.getFileUrl([card.coverPhoto.name]);
       if (url['status'] === 'success') {
-        card.coverPhoto = url.urls[0];
+        card.coverPhoto =  card.coverPhoto = {
+          name: card.coverPhoto.name,
+          url: url.urls[0]
+        };
       }
     }
 
@@ -90,13 +111,22 @@ export class CardService {
       if(ele.image){
         let url = await this.fileUploadService.getFileUrl([ele.image]);
         if (url['status'] === 'success') {
-          ele.image = url.urls[0];
+          ele.image = {
+            name: ele.image,
+            url: url.urls[0]
+          };
         }
       }
+    
       if(ele.images){
         let url = await this.fileUploadService.getFileUrl(ele.images);
         if (url['status'] === 'success') {
-          ele.images = url.urls;
+          ele.images = ele.images.map((e,i) => {
+            return {
+              name: e,
+              url: url.urls[i]
+            }
+          })
         }
       }
     }
@@ -259,10 +289,10 @@ export class CardService {
     }
   }
 
-  async createQR(id) {
+  async createQR(id, slug) {
 
     try {
-      let url = await qr.toDataURL('mysite12443/' + id);
+      let url = await qr.toDataURL(slug);
 
       const storageRef = admin.storage().bucket(process.env.BUCKET_NAME);
 

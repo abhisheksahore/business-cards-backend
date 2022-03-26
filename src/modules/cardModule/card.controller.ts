@@ -8,6 +8,7 @@ import { CardDto } from './dto/cardDto';
 import { CheckSlugDto } from './dto/checkSlug.dto';
 import { EditCardDto } from './dto/editCardDto';
 import { GetCardHeaderDto } from './dto/getCardHeader.dto';
+import { CreateQrDto } from './dto/createQr.dto';
 @Controller()
 export class CardController {
 
@@ -45,6 +46,7 @@ export class CardController {
   @Put('changeStatus')
   async changeStatus(@Query() query: ChangeStatusDto, @Res() res: FastifyReply) {
 
+    console.log(query);
     let response = await this.cardService.changeCardStatus(query.id, query.published);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
@@ -213,9 +215,9 @@ export class CardController {
   }
 
   @Get('createQr')
-  async createCardQr(@Query() query: GetCardDto, @Res() res: FastifyReply) {
+  async createCardQr(@Query() query: CreateQrDto, @Res() res: FastifyReply) {
 
-    let response = await this.cardService.createQR(query.id);
+    let response = await this.cardService.createQR(query.id, query.slug);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
     } else {

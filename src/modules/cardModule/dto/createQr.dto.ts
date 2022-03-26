@@ -1,7 +1,8 @@
+
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsBoolean, IsOptional } from 'class-validator';
 
-export class GetCardDto {
+export class CreateQrDto {
     @ApiProperty({
         description: 'Card id',
         default: '',
@@ -11,11 +12,11 @@ export class GetCardDto {
     id: string;
 
     @ApiProperty({
-        description: 'increase count or not',
-        default: false,
-        required: false
+        description: 'slug url',
+        default: '',
+        required: true
     })
     @IsBoolean()
     @IsOptional()
-    isCount: boolean;
+    slug: string;
 }
