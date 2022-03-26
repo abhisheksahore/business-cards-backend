@@ -44,10 +44,10 @@ export class CardController {
   }
 
   @Put('changeStatus')
-  async changeStatus(@Query() query: ChangeStatusDto, @Res() res: FastifyReply) {
+  async changeStatus(@Body() body: ChangeStatusDto, @Res() res: FastifyReply) {
 
-    console.log(query);
-    let response = await this.cardService.changeCardStatus(query.id, query.published);
+    console.log(body);
+    let response = await this.cardService.changeCardStatus(body.id, body.published);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
     } else {

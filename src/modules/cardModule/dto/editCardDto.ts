@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { IsString, IsBoolean, IsMobilePhone, IsArray, IsOptional } from 'class-validator';
 
 export class EditCardDto {
@@ -432,6 +433,7 @@ export class EditCardDto {
         required: false
     })
     @IsBoolean()
+    @Transform(({ value} ) => value === 'true')
     @IsOptional()
     SaveToContact: boolean;
 
