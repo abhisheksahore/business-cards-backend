@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import { IsString, IsBoolean, IsMobilePhone, IsArray } from 'class-validator';
+import { ToBoolean } from "src/common/toBoolean";
 
 export class ChangeStatusDto {
     @ApiProperty({
@@ -17,7 +18,7 @@ export class ChangeStatusDto {
         required: true
     })
     @IsBoolean()
-    @Transform(({ value} ) => value === 'true')
+    @ToBoolean()
     published: boolean;
 
 }

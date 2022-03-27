@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import { IsString, IsBoolean, IsMobilePhone, IsArray, IsOptional } from 'class-validator';
+import { ToBoolean } from "src/common/toBoolean";
 
 export class CardDto {
 
@@ -443,7 +444,7 @@ export class CardDto {
     })
     @IsBoolean()
     @IsOptional()
-    @Transform(({ value} ) => value === 'true')
+    @ToBoolean()
     SaveToContact: boolean;
 
     // colors
@@ -519,7 +520,7 @@ export class CardDto {
     })
     @IsBoolean()
     @IsOptional()
-    @Transform(({ value} ) => value === 'true')
+    @ToBoolean()
     published: boolean;
 
     @ApiProperty({

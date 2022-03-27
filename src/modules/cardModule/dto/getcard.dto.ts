@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import { IsString, IsBoolean, IsOptional } from 'class-validator';
+import { ToBoolean } from "src/common/toBoolean";
 
 export class GetCardDto {
     @ApiProperty({
@@ -17,7 +18,7 @@ export class GetCardDto {
         required: false
     })
     @IsBoolean()
-    @Transform(({ value} ) => value === 'true')
+    @ToBoolean()
     @IsOptional()
     isCount: boolean;
 }

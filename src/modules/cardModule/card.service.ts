@@ -62,7 +62,6 @@ export class CardService {
 
   }
 
-
   async changeCardImagesToUrl(card) {
 
     card.Logo = {
@@ -100,15 +99,15 @@ export class CardService {
     if (card.coverPhoto) {
       let url = await this.fileUploadService.getFileUrl([card.coverPhoto.name]);
       if (url['status'] === 'success') {
-        card.coverPhoto =  card.coverPhoto = {
+        card.coverPhoto = card.coverPhoto = {
           name: card.coverPhoto.name,
           url: url.urls[0]
         };
       }
     }
 
-    for(let ele of card.ProFeaturesList){
-      if(ele.image){
+    for (let ele of card.ProFeaturesList) {
+      if (ele.image) {
         let url = await this.fileUploadService.getFileUrl([ele.image]);
         if (url['status'] === 'success') {
           ele.image = {
@@ -117,11 +116,11 @@ export class CardService {
           };
         }
       }
-    
-      if(ele.images){
+
+      if (ele.images) {
         let url = await this.fileUploadService.getFileUrl(ele.images);
         if (url['status'] === 'success') {
-          ele.images = ele.images.map((e,i) => {
+          ele.images = ele.images.map((e, i) => {
             return {
               name: e,
               url: url.urls[i]

@@ -46,7 +46,7 @@ export class CardController {
   @Put('changeStatus')
   async changeStatus(@Body() body: ChangeStatusDto, @Res() res: FastifyReply) {
 
-    console.log(body);
+    console.log(body)
     let response = await this.cardService.changeCardStatus(body.id, body.published);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
