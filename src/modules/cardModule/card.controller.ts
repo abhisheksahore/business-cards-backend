@@ -217,17 +217,17 @@ export class CardController {
     }
   }
 
-  @Get('createQr')
-  async createCardQr(@Query() query: CreateQrDto, @Res() res: FastifyReply) {
+  // @Get('createQr')
+  // async createCardQr(@Query() query: CreateQrDto, @Res() res: FastifyReply) {
 
-    let response = await this.cardService.createQR(query.slug);
-    if (response['status'] == 'success') {
-      return res.status(200).send(response);
-    } else {
-      return res.status(400).send(response);
-    }
+  //   let response = await this.cardService.createQR(query.slug);
+  //   if (response['status'] == 'success') {
+  //     return res.status(200).send(response);
+  //   } else {
+  //     return res.status(400).send(response);
+  //   }
 
-  }
+  // }
 
   @Get('checkSlug')
   async checkSlug(@Query() query: CheckSlugDto, @Res() res: FastifyReply) {

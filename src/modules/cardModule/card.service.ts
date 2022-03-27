@@ -218,6 +218,7 @@ export class CardService {
     try {
       data.uid = uid.toString();
 
+      data.qr = (await this.createQR(process.env.APP_URL+data.cardSlug)).data;
       let cardId = await this.dbHelper.addRow(CardCollection, { ...data, createdAt: Date.now(), updatedAt: Date.now() });
       await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
 

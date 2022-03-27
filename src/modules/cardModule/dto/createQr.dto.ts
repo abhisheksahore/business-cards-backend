@@ -1,7 +1,6 @@
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsBoolean, IsOptional } from 'class-validator';
-import { ToBoolean } from "src/common/toBoolean";
+import { IsString } from 'class-validator';
 
 export class CreateQrDto {
    
@@ -12,4 +11,5 @@ export class CreateQrDto {
     })
     @IsString()
     slug: string;
+
 }
