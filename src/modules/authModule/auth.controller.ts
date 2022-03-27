@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { FastifyReply } from 'fastify';
 import { SignupEmailDto } from './dto/signupEmail.dto';
@@ -37,6 +37,18 @@ export class AuthController {
       return res.status(400).send(response);
     }
 
+  }
+
+  @Get('getUserDetails')
+  async userDetails(@Res() res: FastifyReply){
+
+    let response = await this.authService.getUserDetails();
+
+    if (response['status'] == 'success') {
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send(response);
+    }
   }
 
 }
