@@ -27,11 +27,20 @@ export class CardService {
       }
     }
 
-    // let card = await this.dbHelper.getDataById(CardCollection, id);
-    let card = await this.dbHelper.getData(CardCollection,{})
+    let card = await this.dbHelper.getDataById(CardCollection, id);
 
     if (card['status'] === 'error') {
-      return card
+      if (card['message'] === 'invalid id') {
+        card = (await this.dbHelper.getData(CardCollection, {
+          cardSlug: id
+        }))[0];
+        if(!card){
+          return{
+            status:'error',
+            message:'invalid id or slug'
+          }
+        }
+      }
     }
 
     let token: string = this.request.headers['token'] ? this.request.headers['token'].toString() : '';
