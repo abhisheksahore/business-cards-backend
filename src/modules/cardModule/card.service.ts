@@ -288,14 +288,14 @@ export class CardService {
     }
   }
 
-  async createQR(id, slug) {
+  async createQR(slug) {
 
     try {
       let url = await qr.toDataURL(slug);
 
       const storageRef = admin.storage().bucket(process.env.BUCKET_NAME);
 
-      let name = id + Date.now() + '.png'
+      let name = Date.now() + '.png'
 
       const fileRef = storageRef.file(name);
 

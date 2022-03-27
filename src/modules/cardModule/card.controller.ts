@@ -220,7 +220,7 @@ export class CardController {
   @Get('createQr')
   async createCardQr(@Query() query: CreateQrDto, @Res() res: FastifyReply) {
 
-    let response = await this.cardService.createQR(query.id, query.slug);
+    let response = await this.cardService.createQR(query.slug);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
     } else {
