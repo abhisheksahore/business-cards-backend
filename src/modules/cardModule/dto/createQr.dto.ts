@@ -10,8 +10,6 @@ export class CreateQrDto {
         default: '',
         required: true
     })
-    @IsBoolean()
-    @ToBoolean()
-    @IsOptional()
+    @IsString()
     slug: string;
 }

@@ -5,7 +5,7 @@ import { ToBoolean } from "src/common/toBoolean";
 
 export class GetCardDto {
     @ApiProperty({
-        description: 'Card id',
+        description: 'Card id or slug',
         default: '',
         required: true
     })

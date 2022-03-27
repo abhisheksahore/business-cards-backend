@@ -27,7 +27,8 @@ export class CardService {
       }
     }
 
-    let card = await this.dbHelper.getDataById(CardCollection, id);
+    // let card = await this.dbHelper.getDataById(CardCollection, id);
+    let card = await this.dbHelper.getData(CardCollection,{})
 
     if (card['status'] === 'error') {
       return card
