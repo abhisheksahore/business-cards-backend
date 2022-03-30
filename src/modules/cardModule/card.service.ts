@@ -27,6 +27,7 @@ export class CardService {
       }
     }
 
+    let bySlug = false;
     let card = await this.dbHelper.getDataById(CardCollection, id);
 
     if (card['status'] === 'error') {
@@ -34,6 +35,7 @@ export class CardService {
         card = (await this.dbHelper.getData(CardCollection, {
           cardSlug: id
         }))[0];
+        bySlug = true;
         if(!card){
           return{
             status:'error',
@@ -49,6 +51,7 @@ export class CardService {
     if (res['uid']) {
       uid = res['uid'];
     }
+
     if (!card.published && (!uid || card.uid !== uid)) {
 
       return {
@@ -58,7 +61,7 @@ export class CardService {
     }
 
     if (viewCount && card.published && (card.uid !== uid)) {
-      await this.dbHelper.updateById(CardCollection, id, {
+      await this.dbHelper.updateById(CardCollection, card.id, {
         viewCount: card.viewCount + 1
       });
     }
