@@ -254,7 +254,7 @@ export class CardDto {
     })
     @IsString()
     @IsOptional()
-    instagram: string;    
+    instagram: string;
 
     @ApiProperty({
         description: 'youtube of user',
@@ -540,4 +540,30 @@ export class CardDto {
     @IsString()
     cardSlug: string;
 
+
+    // editable button names
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    contactHeading: string;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    socialMediaHeading: string;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    commerceHeadng: string;
 }

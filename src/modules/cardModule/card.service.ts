@@ -77,11 +77,12 @@ export class CardService {
 
   async changeCardImagesToUrl(card) {
 
-    card.Logo = {
-      name: card.Logo,
-      url: ''
-    };
-    if (card.Logo.name) {
+    
+    if (card.Logo) {
+      card.Logo = {
+        name: card.Logo,
+        url: ''
+      };
       let url = await this.fileUploadService.getFileUrl([card.Logo.name]);
       if (url['status'] === 'success') {
         card.Logo = {
@@ -91,11 +92,12 @@ export class CardService {
       }
     }
 
-    card.ProfilePicture = {
-      name: card.ProfilePicture,
-      url: ''
-    };
-    if (card.ProfilePicture.name) {
+    
+    if (card.ProfilePicture) {
+      card.ProfilePicture = {
+        name: card.ProfilePicture,
+        url: ''
+      };
       let url = await this.fileUploadService.getFileUrl([card.ProfilePicture.name]);
       if (url['status'] === 'success') {
         card.ProfilePicture = card.ProfilePicture = {
@@ -105,11 +107,11 @@ export class CardService {
       }
     }
 
-    card.coverPhoto = {
-      name: card.coverPhoto,
-      url: ''
-    };
-    if (card.coverPhoto.name) {
+    if (card.coverPhoto) {
+      card.coverPhoto = {
+        name: card.coverPhoto,
+        url: ''
+      };
       let url = await this.fileUploadService.getFileUrl([card.coverPhoto.name]);
       if (url['status'] === 'success') {
         card.coverPhoto = card.coverPhoto = {

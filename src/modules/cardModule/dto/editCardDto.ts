@@ -504,4 +504,30 @@ export class EditCardDto {
     @IsOptional()
     ProFeaturesList: any;
 
+    // editable button names
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    contactHeading: string;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    socialMediaHeading: string;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    commerceHeadng: string;
+
 }

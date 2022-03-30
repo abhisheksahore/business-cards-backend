@@ -121,7 +121,11 @@ export class CardController {
       published: body.published ? body.published : false,
       uid: '',
       viewCount: 0,
-      cardSlug: body.cardSlug
+      cardSlug: body.cardSlug,
+      // editable button names
+      contactHeading: body.contactHeading,
+      socialMediaHeading: body.socialMediaHeading,
+      commerceHeadng: body.commerceHeadng
 
     }
 
@@ -207,6 +211,9 @@ export class CardController {
       fontColor: body.fontColor ? body.fontColor : '',
       font: body.font ? body.font : '',
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
+      contactHeading: body.contactHeading,
+      socialMediaHeading: body.socialMediaHeading,
+      commerceHeadng: body.commerceHeadng
     }
 
     let response = await this.cardService.editCard(query.id, data);
