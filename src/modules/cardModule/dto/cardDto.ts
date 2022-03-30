@@ -565,5 +565,5 @@ export class CardDto {
         required: true
     })
     @IsString()
-    commerceHeadng: string;
+    commerceHeading: string;
 }

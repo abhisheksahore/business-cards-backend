@@ -528,6 +528,6 @@ export class EditCardDto {
         required: true
     })
     @IsString()
-    commerceHeadng: string;
+    commerceHeading: string;
 
 }
