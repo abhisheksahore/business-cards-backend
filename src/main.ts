@@ -50,6 +50,7 @@ async function bootstrap() {
   const port = Number(process.env.PORT) || 3000;
 
   app.register(fileUpload)
+  app.enableCors();
 
   await app.listen(port, '0.0.0.0');
   const url = await app.getUrl();

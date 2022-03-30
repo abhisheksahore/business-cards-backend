@@ -8,7 +8,7 @@ import { CardDto } from './dto/cardDto';
 import { CheckSlugDto } from './dto/checkSlug.dto';
 import { EditCardDto } from './dto/editCardDto';
 import { CreateQrDto } from './dto/createQr.dto';
-import * as vcardJs  from 'vcards-js'
+import * as vcardJs from 'vcards-js'
 import { createReadStream, readFileSync, unlink } from 'fs';
 import { VcardDtoDto } from './dto/vcard.dto';
 
@@ -246,14 +246,15 @@ export class CardController {
   }
 
   @Get('vcard')
-  async vcard(@Query() query:VcardDtoDto ,@Res() res: FastifyReply){
+  async vcard(@Query() query: VcardDtoDto, @Res() res: FastifyReply) {
     let vCard = vcardJs();
- 
+
     //set properties
-    vCard.name = query.name;
+
+    vCard.firstName = query.name;
     vCard.email = query.email;
-    vCard.phone = query.phone;
-    
+    vCard.cellPhone = query.phone;
+
     res.type('text/vcard').send(vCard.getFormattedString());
   }
 
