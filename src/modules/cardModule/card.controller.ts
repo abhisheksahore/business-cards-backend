@@ -125,7 +125,7 @@ export class CardController {
       // editable button names
       contactHeading: body.contactHeading,
       socialMediaHeading: body.socialMediaHeading,
-      commerceHeadng: body.commerceHeadng
+      commerceHeadng: body.commerceHeading
 
     }
 
@@ -213,7 +213,7 @@ export class CardController {
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
       contactHeading: body.contactHeading,
       socialMediaHeading: body.socialMediaHeading,
-      commerceHeadng: body.commerceHeadng
+      commerceHeadng: body.commerceHeading
     }
 
     let response = await this.cardService.editCard(query.id, data);
