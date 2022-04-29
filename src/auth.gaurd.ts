@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
 
     if (!request.headers || !request.headers.token) {
       throw new UnauthorizedException({
-        status: false,
+        status: 'error',
         error: 'No token found',
       });
     }
@@ -38,7 +38,7 @@ export class AuthGuard implements CanActivate {
     let userDetails = await this.verifyGoogleToken(token);
     if(userDetails['status'] === 'error'){
       throw new UnauthorizedException({
-        status: false,
+        status: 'error',
         error: userDetails['message'],
       });
     }
@@ -50,7 +50,6 @@ export class AuthGuard implements CanActivate {
     try {
       let x = await getAuth()
         .verifyIdToken(token);
-
       return x;
 
     }

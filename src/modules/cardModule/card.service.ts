@@ -3,14 +3,18 @@ import { REQUEST } from '@nestjs/core';
 import { FastifyRequest } from "fastify";
 import { DBHelper } from 'src/common/helpers/db.helpers';
 import { CardCollection, UsersCollection } from 'src/common/collections/allCollections';
-import * as qr from 'qrcode'
+var qr = require('qrcode')
 import * as admin from 'firebase-admin'
+import { AuthGuard } from 'src/auth.gaurd';
+import { FileUploadService } from '../fileUpload/fileupload.service';
 @Injectable()
 export class CardService {
 
   constructor(
     @Inject(REQUEST) private readonly request: FastifyRequest,
-    private readonly dbHelper: DBHelper
+    private readonly dbHelper: DBHelper,
+    private readonly authGaurd: AuthGuard,
+    private readonly fileUploadService: FileUploadService
   ) {
   }
 
@@ -23,24 +27,125 @@ export class CardService {
       }
     }
 
+    let bySlug = false;
     let card = await this.dbHelper.getDataById(CardCollection, id);
 
-    if (viewCount) {
-      await this.dbHelper.updateById(CardCollection, id, {
+    if (card['status'] === 'error') {
+      if (card['message'] === 'invalid id') {
+        card = (await this.dbHelper.getData(CardCollection, {
+          cardSlug: id
+        }))[0];
+        bySlug = true;
+        if(!card){
+          return{
+            status:'error',
+            message:'invalid id or slug'
+          }
+        }
+      }
+    }
+
+    let token: string = this.request.headers['token'] ? this.request.headers['token'].toString() : '';
+    let res = await this.authGaurd.verifyGoogleToken(token);
+    let uid = '';
+    if (res['uid']) {
+      uid = res['uid'];
+    }
+
+    if (!card.published && (!uid || card.uid !== uid)) {
+
+      return {
+        status: 'error',
+        message: 'Card is not published by user'
+      }
+    }
+
+    if (viewCount && card.published && (card.uid !== uid)) {
+      await this.dbHelper.updateById(CardCollection, card.id, {
         viewCount: card.viewCount + 1
       });
     }
 
-    if (card['status'] === 'error') {
-      return card;
+    card = await this.changeCardImagesToUrl(card);
+
+    return {
+      status: 'success',
+      data: card
     }
-    else {
-      return {
-        status: 'success',
-        data: card
+
+  }
+
+  async changeCardImagesToUrl(card) {
+
+    
+    if (card.Logo) {
+      card.Logo = {
+        name: card.Logo,
+        url: ''
+      };
+      let url = await this.fileUploadService.getFileUrl([card.Logo.name]);
+      if (url['status'] === 'success') {
+        card.Logo = {
+          name: card.Logo.name,
+          url: url.urls[0]
+        };
       }
     }
 
+    
+    if (card.ProfilePicture) {
+      card.ProfilePicture = {
+        name: card.ProfilePicture,
+        url: ''
+      };
+      let url = await this.fileUploadService.getFileUrl([card.ProfilePicture.name]);
+      if (url['status'] === 'success') {
+        card.ProfilePicture = card.ProfilePicture = {
+          name: card.ProfilePicture.name,
+          url: url.urls[0]
+        };
+      }
+    }
+
+    if (card.coverPhoto) {
+      card.coverPhoto = {
+        name: card.coverPhoto,
+        url: ''
+      };
+      let url = await this.fileUploadService.getFileUrl([card.coverPhoto.name]);
+      if (url['status'] === 'success') {
+        card.coverPhoto = card.coverPhoto = {
+          name: card.coverPhoto.name,
+          url: url.urls[0]
+        };
+      }
+    }
+
+    for (let ele of card.ProFeaturesList) {
+      if (ele.image) {
+        let url = await this.fileUploadService.getFileUrl([ele.image]);
+        if (url['status'] === 'success') {
+          ele.image = {
+            name: ele.image,
+            url: url.urls[0]
+          };
+        }
+      }
+
+      if (ele.images) {
+        let url = await this.fileUploadService.getFileUrl(ele.images);
+        if (url['status'] === 'success') {
+          ele.images = ele.images.map((e, i) => {
+            return {
+              name: e,
+              url: url.urls[i]
+            }
+          })
+        }
+      }
+    }
+
+    return card;
   }
 
   async getAllCards() {
@@ -108,21 +213,31 @@ export class CardService {
       }
     }
 
-    if(this.checkSlugExist(data.cardSlug)){
+    if (await this.checkSlugExist(data.cardSlug)) {
       return {
         status: 'error',
         message: 'Slug already exist'
       }
     }
 
-    await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
-    data.uid = uid.toString();
-    let cardId = await this.dbHelper.addRow(CardCollection, { ...data });
+    try {
+      data.uid = uid.toString();
 
-    return {
-      status: 'success',
-      message: 'data added successfully',
-      id: cardId
+      data.qr = (await this.createQR(process.env.APP_URL+data.cardSlug)).data;
+      let cardId = await this.dbHelper.addRow(CardCollection, { ...data, createdAt: Date.now(), updatedAt: Date.now() });
+      await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] + 1 });
+
+      return {
+        status: 'success',
+        message: 'data added successfully',
+        id: cardId
+      }
+    }
+    catch (err) {
+      return {
+        status: 'error',
+        message: err.message
+      }
     }
 
   }
@@ -130,10 +245,34 @@ export class CardService {
   async deleteCard(id: string) {
 
     //changes
-    try {
-      let card = await this.dbHelper.getDataById(CardCollection, id);
+    let uid = this.request.headers.uid;
 
-      await this.dbHelper.deleteById(CardCollection, id);
+    if (!uid) {
+      return {
+        status: 'error',
+        message: 'user not found'
+      }
+    }
+    try {
+      let userDetails = await this.dbHelper.getDataById(UsersCollection, uid.toString());
+      if (userDetails['status'] === 'error') {
+        return {
+          status: 'error',
+          message: 'User not found'
+        }
+      }
+      let card = await this.dbHelper.getDataById(CardCollection, id);
+      if (card['status'] === 'error' || card.uid !== uid) {
+        return {
+          status: 'error',
+          message: 'card not found with this user'
+        }
+      }
+      else {
+        await this.dbHelper.deleteById(CardCollection, id);
+
+        await this.dbHelper.updateById(UsersCollection, uid.toString(), { totalCards: userDetails['totalCards'] - 1 });
+      }
 
       return {
         status: 'success',
@@ -151,7 +290,7 @@ export class CardService {
 
   async editCard(id, data) {
     try {
-      await this.dbHelper.updateById(CardCollection, id, data);
+      await this.dbHelper.updateById(CardCollection, id, { ...data, updatedAt: Date.now() });
       return {
         status: 'success',
         message: 'Updated Successfully'
@@ -165,14 +304,14 @@ export class CardService {
     }
   }
 
-  async createQR(id) {
+  async createQR(slug) {
 
     try {
-      let url = await qr.toDataURL('mysite12443/' + id);
+      let url = await qr.toDataURL(slug);
 
       const storageRef = admin.storage().bucket(process.env.BUCKET_NAME);
 
-      let name = id + Date.now() + '.png'
+      let name = Date.now() + '.png'
 
       const fileRef = storageRef.file(name);
 
@@ -198,13 +337,14 @@ export class CardService {
   async checkSlugExist(slug: string) {
 
     if (!slug) {
-      return false;
+      return true;
     }
 
     let cards = await this.dbHelper.getData(CardCollection, {
       cardSlug: slug
     })
 
+    console.log(cards)
     if (cards.length > 0) {
       return true;
     }

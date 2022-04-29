@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin'
+import { request } from 'http';
 import { AuthGuard } from 'src/auth.gaurd';
 import { UsersCollection } from 'src/common/collections/allCollections';
 import { validEmail } from 'src/common/common.service';
 import { DBHelper } from 'src/common/helpers/db.helpers';
+import { FastifyRequest } from "fastify";
+import { REQUEST } from '@nestjs/core';
 
 @Injectable()
 export class AuthService {
 
     constructor(
         private readonly dbHelper: DBHelper,
-        private readonly gaurdService: AuthGuard
+        private readonly gaurdService: AuthGuard,
+        @Inject(REQUEST) private readonly request: FastifyRequest,
     ){}
 
     async signupWithEmail(data: {
@@ -90,6 +94,32 @@ export class AuthService {
                 message:'user already exist',
             }
         }
+    }
+
+    async getUserDetails(){
+
+        let uid = this.request.headers.uid;
+        if(!uid){
+            return {
+                status:'error',
+                message:'user not authenticated'
+            }
+        }
+
+        try{
+            let userData = await this.dbHelper.getDataById(UsersCollection,uid.toString());
+            return {
+                status:'success',
+                data: userData
+            }
+        }
+        catch(err){
+            return{
+                status:'error',
+                message:err.message
+            }
+        }        
+
     }
    
 }

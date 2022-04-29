@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { IsString, IsBoolean, IsMobilePhone, IsArray, IsOptional } from 'class-validator';
+import { ToBoolean } from "src/common/toBoolean";
 
 export class EditCardDto {
 
@@ -50,20 +52,10 @@ export class EditCardDto {
     @ApiProperty({
         description: 'Card Name',
         default: '',
-        required: false
+        required: true
     })
     @IsString()
-    @IsOptional()
     cardName: string;
-
-    @ApiProperty({
-        description: 'Card url',
-        default: '',
-        required: false
-    })
-    @IsString()
-    @IsOptional()
-    cardUrl: string;
 
     @ApiProperty({
         description: 'About user',
@@ -108,7 +100,7 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    PrimaryButtons: Array<any>;
+    PrimaryButtons: any;
 
     @ApiProperty({
         description: 'Social media',
@@ -117,7 +109,7 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    socialMedia: Array<any>;
+    socialMedia: any;
 
     @ApiProperty({
         description: 'Commerce options',
@@ -126,7 +118,7 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    commerce: Array<any>;
+    commerce: any;
 
     @ApiProperty({
         description: 'Telegram Link',
@@ -437,6 +429,72 @@ export class EditCardDto {
     yelp: string;
 
     @ApiProperty({
+        description: 'save to contact',
+        default: false,
+        required: false
+    })
+    @IsBoolean()
+    @ToBoolean()
+    @IsOptional()
+    SaveToContact: boolean;
+
+    // colors
+    @ApiProperty({
+        description: 'Logo Background ',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    logoBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Background Color',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    mainBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Button Background',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    buttonBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Card Background',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    cardBackgroundColor: string;
+
+    @ApiProperty({
+        description: 'Font Color',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    fontColor: string;
+
+    // fonts
+    @ApiProperty({
+        description: 'Font used',
+        default: '',
+        required: false
+    })
+    @IsString()
+    @IsOptional()
+    font: "'Montserrat', sans - serif";
+
+    @ApiProperty({
         description: 'Pro Features',
         default: [],
         required: false
@@ -444,6 +502,32 @@ export class EditCardDto {
     })
     @IsArray()
     @IsOptional()
-    ProFeaturesList: Array<any>;
+    ProFeaturesList: any;
+
+    // editable button names
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    contactHeading: string;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    socialMediaHeading: string;
+
+    @ApiProperty({
+        description: 'Unique card slug',
+        default: '',
+        required: true
+    })
+    @IsString()
+    commerceHeading: string;
 
 }

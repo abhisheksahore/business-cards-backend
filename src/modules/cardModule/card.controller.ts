@@ -7,6 +7,11 @@ import { ChangeStatusDto } from './dto/changeStatus.dto';
 import { CardDto } from './dto/cardDto';
 import { CheckSlugDto } from './dto/checkSlug.dto';
 import { EditCardDto } from './dto/editCardDto';
+import { CreateQrDto } from './dto/createQr.dto';
+import * as vcardJs from 'vcards-js'
+import { createReadStream, readFileSync, unlink } from 'fs';
+import { VcardDtoDto } from './dto/vcard.dto';
+
 @Controller()
 export class CardController {
 
@@ -19,6 +24,7 @@ export class CardController {
 
     let id = query.id;
     let viewCount = query.isCount ? query.isCount : false;
+
     let response = await this.cardService.getCard(id, viewCount);
 
     if (response['status'] == 'success') {
@@ -41,9 +47,10 @@ export class CardController {
   }
 
   @Put('changeStatus')
-  async changeStatus(@Query() query: ChangeStatusDto, @Res() res: FastifyReply) {
+  async changeStatus(@Body() body: ChangeStatusDto, @Res() res: FastifyReply) {
 
-    let response = await this.cardService.changeCardStatus(query.id, query.published);
+    console.log(body)
+    let response = await this.cardService.changeCardStatus(body.id, body.published);
     if (response['status'] == 'success') {
       return res.status(200).send(response);
     } else {
@@ -62,7 +69,6 @@ export class CardController {
       jobTitle: body.jobTitle ? body.jobTitle : '',
       businessDescription: body.businessDescription ? body.businessDescription : '',
       cardName: body.cardName ? body.cardName : '',
-      cardUrl: body.cardUrl ? body.cardUrl : '',
       DescribeYourself: body.DescribeYourself ? body.DescribeYourself : '',
       ProfilePicture: body.ProfilePicture ? body.ProfilePicture : '',
       coverPhoto: body.coverPhoto ? body.coverPhoto : '',
@@ -104,11 +110,22 @@ export class CardController {
       amazonStore: body.amazonStore ? body.amazonStore : '',
       eBayStore: body.eBayStore ? body.eBayStore : '',
       yelp: body.yelp ? body.yelp : '',
+      SaveToContact: body.SaveToContact ? body.SaveToContact : '',
+      logoBackgroundColor: body.logoBackgroundColor ? body.logoBackgroundColor : '',
+      mainBackgroundColor: body.mainBackgroundColor ? body.mainBackgroundColor : '',
+      buttonBackgroundColor: body.buttonBackgroundColor ? body.buttonBackgroundColor : '',
+      cardBackgroundColor: body.cardBackgroundColor ? body.cardBackgroundColor : '',
+      fontColor: body.fontColor ? body.fontColor : '',
+      font: body.font ? body.font : '',
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
       published: body.published ? body.published : false,
       uid: '',
       viewCount: 0,
-      cardSlug: body.cardSlug
+      cardSlug: body.cardSlug,
+      // editable button names
+      contactHeading: body.contactHeading,
+      socialMediaHeading: body.socialMediaHeading,
+      commerceHeading: body.commerceHeading
 
     }
 
@@ -145,7 +162,6 @@ export class CardController {
       jobTitle: body.jobTitle ? body.jobTitle : '',
       businessDescription: body.businessDescription ? body.businessDescription : '',
       cardName: body.cardName ? body.cardName : '',
-      cardUrl: body.cardUrl ? body.cardUrl : '',
       DescribeYourself: body.DescribeYourself ? body.DescribeYourself : '',
       ProfilePicture: body.ProfilePicture ? body.ProfilePicture : '',
       coverPhoto: body.coverPhoto ? body.coverPhoto : '',
@@ -187,7 +203,17 @@ export class CardController {
       amazonStore: body.amazonStore ? body.amazonStore : '',
       eBayStore: body.eBayStore ? body.eBayStore : '',
       yelp: body.yelp ? body.yelp : '',
+      SaveToContact: body.SaveToContact ? body.SaveToContact : '',
+      logoBackgroundColor: body.logoBackgroundColor ? body.logoBackgroundColor : '',
+      mainBackgroundColor: body.mainBackgroundColor ? body.mainBackgroundColor : '',
+      buttonBackgroundColor: body.buttonBackgroundColor ? body.buttonBackgroundColor : '',
+      cardBackgroundColor: body.cardBackgroundColor ? body.cardBackgroundColor : '',
+      fontColor: body.fontColor ? body.fontColor : '',
+      font: body.font ? body.font : '',
       ProFeaturesList: body.ProFeaturesList ? body.ProFeaturesList : [],
+      contactHeading: body.contactHeading,
+      socialMediaHeading: body.socialMediaHeading,
+      commerceHeading: body.commerceHeading
     }
 
     let response = await this.cardService.editCard(query.id, data);
@@ -198,17 +224,17 @@ export class CardController {
     }
   }
 
-  @Get('createQr')
-  async createCardQr(@Query() query: GetCardDto, @Res() res: FastifyReply) {
+  // @Get('createQr')
+  // async createCardQr(@Query() query: CreateQrDto, @Res() res: FastifyReply) {
 
-    let response = await this.cardService.createQR(query.id);
-    if (response['status'] == 'success') {
-      return res.status(200).send(response);
-    } else {
-      return res.status(400).send(response);
-    }
+  //   let response = await this.cardService.createQR(query.slug);
+  //   if (response['status'] == 'success') {
+  //     return res.status(200).send(response);
+  //   } else {
+  //     return res.status(400).send(response);
+  //   }
 
-  }
+  // }
 
   @Get('checkSlug')
   async checkSlug(@Query() query: CheckSlugDto, @Res() res: FastifyReply) {
@@ -217,6 +243,19 @@ export class CardController {
     return res.status(200).send({
       status: response
     });
+  }
+
+  @Get('vcard')
+  async vcard(@Query() query: VcardDtoDto, @Res() res: FastifyReply) {
+    let vCard = vcardJs();
+
+    //set properties
+
+    vCard.firstName = query.name;
+    vCard.email = query.email;
+    vCard.cellPhone = query.phone;
+
+    res.type('text/vcard').send(vCard.getFormattedString());
   }
 
 }
