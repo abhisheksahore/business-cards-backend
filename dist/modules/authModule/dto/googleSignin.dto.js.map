@@ -1,0 +1,1 @@
+{"version":3,"file":"googleSignin.dto.js","sourceRoot":"","sources":["../../../../src/modules/authModule/dto/googleSignin.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,6CAA8C;AAC9C,qDAAyC;AACzC,MAAa,eAAe;CAS3B;AAFG;IANC,IAAA,qBAAW,EAAC;QACT,WAAW,EAAE,cAAc;QAC3B,OAAO,EAAE,EAAE;QACX,QAAQ,EAAC,IAAI;KAChB,CAAC;IACD,IAAA,0BAAQ,GAAE;;oDACS;AAPxB,0CASC"}
